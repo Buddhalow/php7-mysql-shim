@@ -170,7 +170,6 @@ namespace {
         function mysql_select_db($databaseName, mysqli $link = null)
         {
             $link = MySQL::getConnection($link);
-
             return mysqli_query(
                 $link,
                 'USE `' . mysqli_real_escape_string($link, $databaseName) . '`'
@@ -179,7 +178,13 @@ namespace {
 
         function mysql_query($query, mysqli $link = null)
         {
-            return mysqli_query(MySQL::getConnection($link), $query);
+          if (function_exists('php_7_mysql_shim_before_mysql_query')) {
+            call_user_func('php_7_mysql_shim_before_mysql_query', $link, $query);
+          }
+          $result = mysqli_query(MySQL::getConnection($link), $query);
+          if (function_exists('php7_mysql_shim_after_mysql_query')) {
+            call_user_func('php7_mysql_shim_after_mysql_query', $link, $query, $result);
+          }
         }
 
         function mysql_unbuffered_query($query, mysqli $link = null)
@@ -195,7 +200,13 @@ namespace {
         function mysql_db_query($databaseName, $query, mysqli $link = null)
         {
             if (mysql_select_db($databaseName, $link)) {
-                return mysql_query($query, $link);
+              if (function_exists('php7_mysql_shim_before_mysql_query')) {
+                call_user_func('php7_mysql_shim_before_mysql_query', $link, $query);
+              }
+              $result = mysql_query($query, $link);
+              if (function_exists('php7_mysql_shim_after_mysql_query')) {
+                call_user_func('php7_mysql_shim_on_query', $link, $query, $result);
+              }
             }
             return false;
         }
