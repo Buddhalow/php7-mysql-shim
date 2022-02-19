@@ -205,7 +205,7 @@ namespace {
               }
               $result = mysql_query($query, $link);
               if (function_exists('php7_mysql_shim_after_mysql_query')) {
-                call_user_func('php7_mysql_shim_on_query', $link, $query, $result);
+                call_user_func('php7_mysql_shim_after_query', $link, $query, $result);
               }
             }
             return false;
