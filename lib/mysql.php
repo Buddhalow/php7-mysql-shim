@@ -185,6 +185,7 @@ namespace {
           if (function_exists('php7_mysql_shim_after_mysql_query')) {
             call_user_func('php7_mysql_shim_after_mysql_query', $link, $query, $result);
           }
+          return $result;
         }
 
         function mysql_unbuffered_query($query, mysqli $link = null)
